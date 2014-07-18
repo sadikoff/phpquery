@@ -2,7 +2,7 @@
     "name":"wittiws/phpquery",
     "type":"library",
     "description":"PHP5.3+ namespaced version of phpQuery with enhanced CSS support",
-    "version":"0.9.6a",
+    "version":"0.9.7",
     "keywords":[
         
     ]
