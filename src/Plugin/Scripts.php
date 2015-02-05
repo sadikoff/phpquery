@@ -1,11 +1,14 @@
 <?php
+
+namespace phpQuery\Plugin;
+
 /**
  * phpQuery plugin class extending phpQuery object.
  * Methods from this class are callable on every phpQuery object.
  *
  * Class name prefix '\PhpQuery\Plugin\' must be preserved.
  */
-abstract class \PhpQuery\Plugin\Scripts {
+abstract class Scripts {
 	/**
 	 * Limit binded methods.
 	 *
@@ -26,9 +29,9 @@ abstract class \PhpQuery\Plugin\Scripts {
 		$params = array_slice($params, 2);
 		$return = null;
 		$config = self::$config;
-		if (\PhpQuery\Plugin\UtilScripts::$scriptMethods[$arg1]) {
+		if (UtilScripts::$scriptMethods[$arg1]) {
 			phpQuery::callbackRun(
-				\PhpQuery\Plugin\UtilScripts::$scriptMethods[$arg1],
+				UtilScripts::$scriptMethods[$arg1],
 				array($self, $params, &$return, $config)
 			);
 		} else if ($arg1 != '__config' && file_exists(dirname(__FILE__)."/Scripts/$arg1.php")) {
@@ -42,12 +45,12 @@ abstract class \PhpQuery\Plugin\Scripts {
 			: $self;
 	}
 }
-abstract class \PhpQuery\Plugin\UtilScripts {
+abstract class UtilScripts {
 	public static $scriptMethods = array();
 	public static function __initialize() {
 		if (file_exists(dirname(__FILE__)."/Scripts/__config.php")) {
 			include dirname(__FILE__)."/Scripts/__config.php";
-			\PhpQuery\Plugin\Scripts::$config = $config;
+			Scripts::$config = $config;
 		}
 	}
 	/**
@@ -64,9 +67,9 @@ abstract class \PhpQuery\Plugin\UtilScripts {
 	 * @return bool
 	 */
 	public static function script($name, $callback) {
-		if (\PhpQuery\Plugin\UtilScripts::$scriptMethods[$name])
+		if (UtilScripts::$scriptMethods[$name])
 			throw new \Exception("Script name conflict - '$name'");
-		\PhpQuery\Plugin\UtilScripts::$scriptMethods[$name] = $callback;
+		UtilScripts::$scriptMethods[$name] = $callback;
 	}
 }
 ?>
