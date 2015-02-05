@@ -1,6 +1,7 @@
 <?php
-namespace PhpQuery;
-use PhpQuery\Dom\DomEvent;
+namespace phpQuery;
+
+use phpQuery\DOM\DOMEvent;
 
 /**
  * Event handling class.
@@ -9,7 +10,7 @@ use PhpQuery\Dom\DomEvent;
  * @package phpQuery
  * @static
  */
-abstract class PhpQueryEvents {
+abstract class phpQueryEvents {
   /**
    * Trigger a type of event on every matched element.
    *

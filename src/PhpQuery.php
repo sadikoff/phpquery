@@ -12,16 +12,20 @@
  * @package phpQuery
  */
 
-namespace PhpQuery;
-use PhpQuery\Dom\DomDocumentWrapper as DOMDocumentWrapper;
+namespace phpQuery;
+
+use phpQuery\DOM\DOMDocumentWrapper;
+
 require_once __DIR__ . '/bootstrap.php';
 
 /**
  * Shortcut to phpQuery::pq($arg1, $context)
  * Chainable.
  *
- * @see phpQuery::pq()
- * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+ * @param string|\DOMNode|\DOMNodeList|array	$arg1	HTML markup, CSS Selector, \DOMNode or array of \DOMNodes
+ * @param string|PhpQueryObject|\DOMNode	$context	DOM ID from $pq->getDocumentID(), phpQuery object (determines also query root) or \DOMNode (determines also query root)
+ *
+ * @return PhpQueryObject|false
  * @author Tobiasz Cudnik <tobiasz.cudnik/gmail.com>
  * @package phpQuery
  */
@@ -49,7 +53,7 @@ abstract class phpQuery {
   /**
    * Applies only to HTML.
    *
-   * @var unknown_type
+   * @var string
    */
   public static $defaultDoctype = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">';
@@ -63,7 +67,7 @@ abstract class phpQuery {
   /**
    * List of loaded plugins.
    *
-   * @var unknown_type
+   * @var array
    */
   public static $pluginsLoaded = array();
   public static $pluginsMethods = array();
@@ -162,7 +166,9 @@ abstract class phpQuery {
    * @param string|\DOMNode|\DOMNodeList|array	$arg1	HTML markup, CSS Selector, \DOMNode or array of \DOMNodes
    * @param string|PhpQueryObject|\DOMNode	$context	DOM ID from $pq->getDocumentID(), phpQuery object (determines also query root) or \DOMNode (determines also query root)
    *
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery|QueryTemplatesPhpQuery|false
+   * @throws \Exception
+   *
+   * @return PhpQueryObject|QueryTemplatesPhpQuery|false
    * phpQuery object or false in case of error.
    */
   public static function pq($arg1, $context = null) {
@@ -268,7 +274,7 @@ abstract class phpQuery {
    * to using this method.
    * $id can be retrived via getDocumentID() or getDocumentIDRef().
    *
-   * @param unknown_type $id
+   * @param string $id
    */
   public static function selectDocument($id) {
     $id = self::getDocumentID($id);
@@ -281,8 +287,8 @@ abstract class phpQuery {
    * Chainable.
    *
    * @see phpQuery::selectDocument()
-   * @param unknown_type $id
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param string $id
+   * @return PhpQueryObject
    */
   public static function getDocument($id = null) {
     if ($id)
@@ -295,8 +301,9 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param null|string $markup
+   * @param null|string $contentType
+   * @return PhpQueryObject
    */
   public static function newDocument($markup = null, $contentType = null) {
     if (!$markup)
@@ -308,8 +315,9 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param null|string $markup
+   * @param null|string $charset
+   * @return PhpQueryObject
    */
   public static function newDocumentHTML($markup = null, $charset = null) {
     $contentType = $charset ? ";charset=$charset" : '';
@@ -319,8 +327,9 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param null|string $markup
+   * @param null|string $charset
+   * @return PhpQueryObject
    */
   public static function newDocumentXML($markup = null, $charset = null) {
     $contentType = $charset ? ";charset=$charset" : '';
@@ -330,8 +339,9 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param null|string $markup
+   * @param null|string $charset
+   * @return PhpQueryObject
    */
   public static function newDocumentXHTML($markup = null, $charset = null) {
     $contentType = $charset ? ";charset=$charset" : '';
@@ -341,8 +351,9 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param null|string $markup
+   * @param string $contentType
+   * @return PhpQueryObject
    */
   public static function newDocumentPHP($markup = null, $contentType = "text/html") {
     // TODO pass charset to phpToMarkup if possible (use DOMDocumentWrapper function)
@@ -423,7 +434,9 @@ abstract class phpQuery {
    * Chainable.
    *
    * @param string $file URLs allowed. See File wrapper page at php.net for more supported sources.
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param null|string $contentType
+   *
+   * @return PhpQueryObject
    */
   public static function newDocumentFile($file, $contentType = null) {
     $documentID = self::createDocumentWrapper(file_get_contents($file), $contentType);
@@ -433,8 +446,10 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param string $file URLs allowed. See File wrapper page at php.net for more supported sources.
+   * @param null|string $charset
+   *
+   * @return PhpQueryObject
    */
   public static function newDocumentFileHTML($file, $charset = null) {
     $contentType = $charset ? ";charset=$charset" : '';
@@ -444,8 +459,10 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param string $file URLs allowed. See File wrapper page at php.net for more supported sources.
+   * @param null|string $charset
+   *
+   * @return PhpQueryObject
    */
   public static function newDocumentFileXML($file, $charset = null) {
     $contentType = $charset ? ";charset=$charset" : '';
@@ -455,8 +472,10 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param string $file URLs allowed. See File wrapper page at php.net for more supported sources.
+   * @param null|string $charset
+   *
+   * @return PhpQueryObject
    */
   public static function newDocumentFileXHTML($file, $charset = null) {
     $contentType = $charset ? ";charset=$charset" : '';
@@ -466,8 +485,10 @@ abstract class phpQuery {
    * Creates new document from markup.
    * Chainable.
    *
-   * @param unknown_type $markup
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @param string $file URLs allowed. See File wrapper page at php.net for more supported sources.
+   * @param null|string $contentType
+   *
+   * @return PhpQueryObject
    */
   public static function newDocumentFilePHP($file, $contentType = null) {
     return self::newDocumentPHP(file_get_contents($file), $contentType);
@@ -477,7 +498,7 @@ abstract class phpQuery {
    * Chainable.
    *
    * @param $document \DOMDocument
-   * @return PhpQueryObject|QueryTemplatesSource|QueryTemplatesParse|QueryTemplatesSourceQuery
+   * @return PhpQueryObject
    * @TODO support \DOMDocument
    */
   public static function loadDocument($document) {
@@ -487,9 +508,13 @@ abstract class phpQuery {
   /**
    * Enter description here...
    *
-   * @param unknown_type $html
-   * @param unknown_type $domId
-   * @return unknown New DOM ID
+   * @param string $html
+   * @param string $contentType
+   * @param string $documentID
+   *
+   * @throws \Exception
+   *
+   * @return string New DOM ID
    * @todo support PHP tags in input
    * @todo support passing \DOMDocument object from self::loadDocument
    */
@@ -525,8 +550,11 @@ abstract class phpQuery {
    *
    * @param string|array $target
    * @param array $source
+   *
+   * @throws \Exception
+   *
    * @TODO support string $source
-   * @return unknown_type
+   * @return boolean
    */
   public static function extend($target, $source) {
     switch ($target) {
@@ -548,13 +576,13 @@ abstract class phpQuery {
     foreach ($source as $method => $callback) {
       if (isset($targetRef[$method])) {
         //				throw new \Exception
-        self::debug("Duplicate method '{$method}', can\'t extend '{$target}'");
+        self::debug("Duplicate method '{$method}', can't extend '{$target}'");
         continue;
       }
       if (isset($targetRef2[$method])) {
         //				throw new \Exception
         self::debug("Duplicate method '{$method}' from plugin '{$targetRef2[$method]}',"
-          . " can\'t extend '{$target}'");
+          . " can't extend '{$target}'");
         continue;
       }
       $targetRef[$method] = $callback;
@@ -566,6 +594,10 @@ abstract class phpQuery {
    *
    * @param string $class Extending class name. Real class name can be prepended phpQuery_.
    * @param string $file Filename to include. Defaults to "{$class}.php".
+   *
+   * @throws \Exception
+   *
+   * @return boolean
    */
   public static function plugin($class, $file = null) {
     // TODO $class checked agains phpQuery_$class
@@ -596,9 +628,8 @@ abstract class phpQuery {
         )))
           continue;
         if (isset(self::$pluginsStaticMethods[$method])) {
-          throw new \Exception("Duplicate method '{$method}' from plugin '{$c}' conflicts with same method from plugin '"
+          throw new \Exception("Duplicate method '{$method}' from plugin '{$class}' conflicts with same method from plugin '"
             . self::$pluginsStaticMethods[$method] . "'");
-          return;
         }
         self::$pluginsStaticMethods[$method] = $class;
       }
@@ -622,7 +653,7 @@ abstract class phpQuery {
         )))
           continue;
         if (isset(self::$pluginsMethods[$method])) {
-          throw new \Exception("Duplicate method '{$method}' from plugin '{$c}' conflicts with same method from plugin '"
+          throw new \Exception("Duplicate method '{$method}' from plugin '{$class}' conflicts with same method from plugin '"
             . self::$pluginsMethods[$method] . "'");
           continue;
         }
@@ -634,7 +665,7 @@ abstract class phpQuery {
   /**
    * Unloades all or specified document from memory.
    *
-   * @param mixed $documentID @see phpQuery::getDocumentID() for supported types.
+   * @param string $id @see phpQuery::getDocumentID() for supported types.
    */
   public static function unloadDocuments($id = null) {
     if (isset($id)) {
@@ -997,7 +1028,7 @@ abstract class phpQuery {
   /**
    * Returns source's document ID.
    *
-   * @param $source \DOMNode|PhpQueryObject
+   * @param \DOMDocument|\DOMNode| $source
    * @return string
    */
   public static function getDocumentID($source) {
@@ -1013,7 +1044,7 @@ abstract class phpQuery {
           return $id;
       }
     }
-    else if ($source instanceof PhpQueryObject)
+    else if ($source instanceof php)
       return $source->getDocumentID();
     else if (is_string($source) && isset(phpQuery::$documents[$source]))
       return $source;
